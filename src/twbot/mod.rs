@@ -96,7 +96,7 @@ impl Bot {
     ) -> Result<Self, SyncError> {
         Ok(Bot {
             authenticator: client::OAuthClient::new(app_key, app_secret, user_token, user_secret),
-            client: Client::builder().pool_max_idle_per_host(0).build()?,
+            client: Client::builder().build()?,
         })
     }
 

@@ -113,7 +113,7 @@ impl OAuthClient {
     }
 
     fn create_auth(&self, signature: String, nonce: String, timestamp: String) -> String {
-        let mut result = String::new();
+        let mut result = String::from("OAuth ");
         result.push_str(
             vec![
                 "oauth_consumer_key=\"".to_string() + self.app_key.clone().as_str() + "\"",
@@ -129,7 +129,7 @@ impl OAuthClient {
         );
         debug!("OAuth Authorization: {}", result);
 
-        String::from("OAuth ") + &result
+        result
     }
 
     fn create_signature(&self, method: &Method, url: &Url, mut params: Vec<Parameter>) -> String {
@@ -153,6 +153,8 @@ impl OAuthClient {
         .map(|v| percent_encode(v.as_bytes(), TWITTER_ENCODING).to_string())
         .collect::<Vec<String>>()
         .join("&");
+
+        debug!("Base string: {}", base_string);
 
         hmac.input(base_string.as_bytes());
         base64::bytes_to_base64(hmac.result().code().to_vec())

@@ -47,3 +47,23 @@ async fn tweet_fox_video(_: Event, _: Context) -> Result<Response, Error> {
 
     Ok(resp)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_authorization() {
+        SimpleLogger::new()
+            .with_level(log::LevelFilter::Info)
+            .env()
+            .init()
+            .unwrap();
+
+        let bot = twbot::Bot::new_from_env().unwrap();
+        let fox_video = std::fs::File::open("./fox_friday.mp4").unwrap();
+        let fox_video_len = fox_video.metadata().unwrap().len() as usize;
+
+        bot.upload_media(fox_video, fox_video_len).unwrap();
+    }
+}

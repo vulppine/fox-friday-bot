@@ -21,6 +21,8 @@ impl Parameter {
     // putting this here feels... messy.
     // however, it's the only way to get to the internal non-public key/value
     pub fn join(params: Vec<Self>) -> String {
+        log::debug!("Joining params now: {:?}", params);
+
         params
             .iter()
             .map(|p| {
