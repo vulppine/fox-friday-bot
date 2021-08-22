@@ -110,6 +110,15 @@ impl OAuthClient {
                 .cloned()
                 .collect::<Vec<u8>>(),
         )
+
+        /*
+        Ok(nonce
+            .to_vec()
+            .iter()
+            .map (|b| b.to_string())
+            .collect::<Vec<String>>()
+            .join(""))
+        */
     }
 
     fn create_auth(&self, signature: String, nonce: String, timestamp: String) -> String {
@@ -157,6 +166,7 @@ impl OAuthClient {
         debug!("Base string: {}", base_string);
 
         hmac.input(base_string.as_bytes());
+        debug!("Signature (pre-encode): {}", base64::bytes_to_base64(hmac.result().code().to_vec()));
         base64::bytes_to_base64(hmac.result().code().to_vec())
     }
 }
@@ -244,5 +254,38 @@ mod tests {
             cloned_params,
         );
         assert_eq!(signature, "hCtSmYh+iHYCEqBWrE7C7hYmtUk=");
+    }
+
+    #[test]
+    #[ignore]
+    fn test_request_forming() {
+        use reqwest::blocking::Client;
+
+        let http_client = Client::new();
+        let oauth_client = super::OAuthClient::new(
+            "xvz1evFS4wEEPTGEFPHBog".to_string(),
+            "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw".to_string(),
+            "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb".to_string(),
+            "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE".to_string(),
+        );
+
+        let form = [("key1", "value1"), ("key2", "value2")];
+
+        let mut counter = 0; while counter < 3 {
+            let params = vec![
+                Parameter::new("key1", "value1"),
+                Parameter::new("key2", "value2")
+            ];
+
+            let mut request = http_client.post("http://localhost:80/nonexistant_endpoint.json")
+                .form(&form)
+                .build()
+                .unwrap();
+
+            request = oauth_client.auth_request(request, params).unwrap();
+
+            http_client.execute(request).unwrap();
+            counter += 1;
+        }
     }
 }

@@ -96,7 +96,9 @@ impl Bot {
     ) -> Result<Self, SyncError> {
         Ok(Bot {
             authenticator: client::OAuthClient::new(app_key, app_secret, user_token, user_secret),
-            client: Client::builder().build()?,
+            client: Client::builder()
+                .user_agent("OAuth fox-friday-bot")
+                .build()?,
         })
     }
 
@@ -197,11 +199,21 @@ impl Bot {
 
     fn init_media_upload(&self, length: usize) -> Result<Media, SyncError> {
         let length_string = length.to_string();
+        /*
         let mut form = HashMap::new();
         form.insert("command", "INIT");
         form.insert("total_bytes", &length_string);
         form.insert("media_category", "tweet_video");
         form.insert("media_type", "video/mp4");
+        */
+
+        let form = [
+            ("command", "INIT"),
+            ("total_bytes", &length_string),
+            ("media_category", "tweet_video"),
+            ("media_type", "video/mp4")
+        ];
+
         let parameters = vec![
             Parameter::new("command", "INIT"),
             Parameter::new("total_bytes", &length.to_string()),
@@ -228,9 +240,17 @@ impl Bot {
     }
 
     fn finalize_media_upload(&self, id: String) -> Result<Media, SyncError> {
+        /*
         let mut form = HashMap::new();
         form.insert("command", "FINALIZE");
         form.insert("media_id", &id);
+        */
+
+        let form = [
+            ("command", "FINALIZE"),
+            ("media_id", &id)
+        ];
+
         let parameters = vec![
             Parameter::new("command", "FINALIZE"),
             Parameter::new("media_id", id.clone()),
