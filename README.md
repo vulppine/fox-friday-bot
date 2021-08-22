@@ -20,11 +20,10 @@ The primary flow is this:
    Twitter account.
 
 This is done via a Lambda function, which is triggered by a cron expression that
-runs it every friday at 4 AM UTC (9 AM PST).
+runs it every friday at 4 PM UTC (9 AM PST).
 
 This was mostly for me to learn how to effectively generate an oAuth
-authorization header (and it still has hiccups on my local machine when I was
-testing), as well as practice some more Rust in a practical sense.
+authorization header, as well as practice some more Rust in a practical sense.
 
 License
 =======
